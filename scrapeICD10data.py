@@ -5,7 +5,7 @@ Created on Thu Dec 12 11:14:29 2019
 @author: david
 """
 
-import re
+import re, time, random
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
@@ -14,7 +14,8 @@ import pandas as pd
 
 
 ### download chrome driver from https://chromedriver.chromium.org/ 
-driver = webdriver.Chrome('C:/Users/david/Documents/chromedriver/chromedriver.exe')
+# driver = webdriver.Chrome('C:/Users/david/Documents/chromedriver/chromedriver.exe')
+driver = webdriver.Chrome('/usr/local/bin/chromedriver')
 http = "https://www.icd10data.com/ICD10CM/Codes"
 driver.get(http)
 
@@ -30,6 +31,12 @@ def saveData(df, parent, parentdesc, child1, child1desc, child2, child2desc):
 def getICD10desc(icd10desc_all, icd10code):
     res = re.search(icd10code, icd10desc_all).end()
     return icd10desc_all[(res+1):]
+
+def throttle(st,ed):
+    slp = random.randint(st,ed)
+    print(f"Let's rest for {slp} seconds!")
+    time.sleep(slp)
+
 
 parentlistXpath = '/html/body/div[3]/div/div[1]/div/ul/li[*]/a'
 parentlist = driver.find_elements_by_xpath(parentlistXpath)
@@ -72,8 +79,11 @@ for i in range(len(parentlist)):
             
         print(df.shape)
         driver.get(http+'/'+parent)
+        throttle(1,3)
         ## back to child1 list
     driver.get(http)
+    throttle(5,10)
+    
     ## back to parent list
     
 
